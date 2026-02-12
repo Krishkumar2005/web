@@ -1,73 +1,27 @@
-# React + TypeScript + Vite
+# My Sync App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# mobile root screen code exist in app/(tabs)/index.tsx
+# web code exist in App.tsx and all components are exist in components folder
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 1. Safe Area Handling
+- Used `document.documentElement.style.setProperty('--bento-safe-top', '40px');` in WebView for web content inside mobile app.
+- Ensured top padding avoids notch and status bar.
+- On mobile, wrapped content in `View` with proper padding if needed.
 
-## React Compiler
+## 2. Android Back Button Handling
+- Implemented `BackHandler` in React Native:
+  - If WebView can go back (`canGoBack`), navigate web history.
+  - If WebView is at root, let default system handle (exit app).
+- Prevented accidental app closure during navigation.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 3. Sync Strategy
+- Web detects if running inside app via user-agent `BentoShell`.
+- Mobile app sends `sync` message via `postMessage`.
+- Web receives the sync response and updates UI.
+- On web, simulates device response if outside app.
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 4. Screen Recording
+- 60-second video shows:
+  - Web in browser → Navbar, Sidebar, Footer visible.
+  - Web in mobile app → Navbar, Sidebar, Footer hidden, sync button works, safe area respected.
